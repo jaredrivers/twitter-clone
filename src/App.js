@@ -16,7 +16,7 @@ function App() {
 				createTweet={createTweet}
 				setCreateTweet={setCreateTweet}
 			/>
-			<TweetFeed sentTweet={sentTweet} />
+			<TweetFeed sentTweet={sentTweet} setSentTweet={setSentTweet} />
 		</div>
 	);
 }

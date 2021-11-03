@@ -1,6 +1,7 @@
-import React from "react";
-import { useState } from "react/cjs/react.development";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
+import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "react";
 
 const Form = styled.form`
 	border: none;
@@ -33,10 +34,28 @@ const Button = styled.button`
 	font-weight: 550;
 	background-color: #710117;
 	cursor: pointer;
+	margin-left: auto;
+`;
+const LowerDiv = styled.div`
+	display: flex;
+	width: 100%;
+	align-items: center;
+`;
+const Warning = styled.div`
+	flex-grow: 1;
+	text-align: center;
+	color: red;
 `;
 
 function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
+	const [warn, setWarn] = useState(false);
+
 	const changeHandler = (e) => {
+		if (e.target.value.length > 140) {
+			setWarn(true);
+		} else {
+			setWarn(false);
+		}
 		setCreateTweet(e.target.value);
 	};
 
@@ -46,14 +65,17 @@ function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
 		setSentTweet([
 			...sentTweet,
 			{
-				value: createTweet,
-				username: "jaredriver",
-				key: createTweet + Math.random() * 100,
-				timeStamp: date,
+				content: createTweet,
+				userName: "jaredriver",
+				date: date,
 			},
 		]);
+		axios.post(serverURL, sentTweet[sentTweet.length - 1]);
 		setCreateTweet("");
 	};
+
+	const serverURL =
+		"https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet";
 
 	return (
 		<div className='formWrapper'>
@@ -62,20 +84,22 @@ function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
 					className='textArea'
 					id='textArea'
 					name='textarea'
-					maxlength='140'
 					placeholder='What do you have in mind...'
 					onChange={changeHandler}
 					required
 					value={createTweet}></Textarea>
 			</Form>
-			<Button
-				type='submit'
-				name='sendTweet'
-				className='sendTweet'
-				id='sendTweet'
-				onClick={submitHandler}>
-				Tweet
-			</Button>
+			<LowerDiv>
+				{warn && <Warning>Tweet has exceeded 140 characters...</Warning>}
+				<Button
+					type='submit'
+					name='sendTweet'
+					className='sendTweet'
+					id='sendTweet'
+					onClick={submitHandler}>
+					Tweet
+				</Button>
+			</LowerDiv>
 		</div>
 	);
 }

@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 const List = styled.ul`
 	width: 50%;
 	display: flex;
 	flex-direction: column;
 	margin: auto;
+	overflow-x: hidden;
 `;
 
 const TweetDiv = styled.div`
@@ -30,17 +32,33 @@ const Tvalue = styled.p`
 	margin: 0.5rem 0.5rem 1rem 0.5rem;
 `;
 
-function TweetFeed({ sentTweet }) {
+function TweetFeed({ sentTweet, setSentTweet }) {
+	const [displayedTweets, setDisplayedTweets] = useState([]);
+
+	const tweetFetch = async () => {
+		try {
+			const tweetObject = await axios.get(
+				`https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet`
+			);
+			const tweetList = tweetObject.data.tweets;
+			setDisplayedTweets(tweetList);
+		} catch {}
+	};
+
+	useEffect(() => {
+		tweetFetch();
+	}, []);
+
 	return (
 		<List>
-			{sentTweet.map((tweet) => {
+			{displayedTweets.map((tweet) => {
 				return (
-					<TweetDiv key={tweet.key}>
+					<TweetDiv key={tweet.id}>
 						<Upper>
-							<Username>{tweet.username}</Username>
-							<p>{tweet.timeStamp}</p>
+							<Username>{tweet.userName}</Username>
+							<p>{tweet.date}</p>
 						</Upper>
-						<Tvalue>{tweet.value}</Tvalue>
+						<Tvalue>{tweet.content}</Tvalue>
 					</TweetDiv>
 				);
 			})}

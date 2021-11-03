@@ -6,7 +6,7 @@
 }
 body {
 	height: 100vh;
-	overflow: hidden;
+	overflow-x: hidden;
 	background-color: #ecd5bb;
 }
 .formWrapper {
