@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { TweetContext } from "../Contexts/TweetContext";
 
 const List = styled.ul`
 	width: 50%;
@@ -37,8 +38,8 @@ const Tvalue = styled.p`
 	margin: 0.5rem 0.5rem 1rem 0.5rem;
 `;
 
-function TweetFeed({ sentTweet, setSentTweet }) {
-	const [displayedTweets, setDisplayedTweets] = useState([]);
+function TweetFeed() {
+	const { sentTweet, setSentTweet, submitState } = useContext(TweetContext);
 
 	const tweetFetch = async () => {
 		try {
@@ -46,27 +47,28 @@ function TweetFeed({ sentTweet, setSentTweet }) {
 				`https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet`
 			);
 			const tweetList = tweetObject.data.tweets;
-			setDisplayedTweets(tweetList);
+			setSentTweet(tweetList);
 		} catch {}
 	};
 
 	useEffect(() => {
 		tweetFetch();
-	}, []);
+	}, [submitState]);
 
 	return (
 		<List>
-			{displayedTweets.map((tweet) => {
-				return (
-					<TweetDiv key={tweet.id}>
-						<Upper>
-							<Username>{tweet.userName}</Username>
-							<TDate>{tweet.date}</TDate>
-						</Upper>
-						<Tvalue>{tweet.content}</Tvalue>
-					</TweetDiv>
-				);
-			})}
+			{sentTweet &&
+				sentTweet.map((tweet) => {
+					return (
+						<TweetDiv key={tweet.id}>
+							<Upper>
+								<Username>{tweet.userName}</Username>
+								<TDate>{tweet.date}</TDate>
+							</Upper>
+							<Tvalue>{tweet.content}</Tvalue>
+						</TweetDiv>
+					);
+				})}
 		</List>
 	);
 }

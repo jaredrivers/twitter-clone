@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { ProfileContext } from "../Contexts/ProfileContext";
+import { TweetContext } from "../Contexts/TweetContext";
 
 const Form = styled.form`
 	border: none;
@@ -40,6 +42,12 @@ const Button = styled.button`
 	:disabled {
 		opacity: 50%;
 		cursor: auto;
+		:hover {
+			background-color: #007bff;
+		}
+	}
+	:hover {
+		background-color: #006ee5;
 	}
 `;
 const LowerDiv = styled.div`
@@ -55,14 +63,21 @@ const Warning = styled.div`
 	color: red;
 `;
 
-function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
+function TweetForm() {
+	const { profileName } = useContext(ProfileContext);
+	const {
+		createTweet,
+		setCreateTweet,
+		sentTweet,
+		setSentTweet,
+		setSubmitState,
+	} = useContext(TweetContext);
 	const [warn, setWarn] = useState(false);
 	const [disabled, setDisabled] = useState(true);
 
 	const changeHandler = (e) => {
 		console.log(e.target.value.length);
 		if (e.target.value.length === 0) {
-			console.log("Its zero");
 			setDisabled(true);
 		} else if (e.target.value.length > 140) {
 			setWarn(true);
@@ -77,20 +92,25 @@ function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
 	const submitHandler = async () => {
 		const date = new Date().toISOString();
 
+		setSentTweet([
+			...sentTweet,
+			{ content: createTweet, userName: profileName, date: date },
+		]);
+
 		const serverURL =
 			"https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet";
 
-		setSentTweet([
-			...sentTweet,
-			{
+		try {
+			await axios.post(serverURL, {
 				content: createTweet,
-				userName: "Melania Drumpf",
+				userName: profileName,
 				date: date,
-			},
-		]);
-
-		await axios.post(serverURL, sentTweet[sentTweet.length - 1]);
+			});
+		} catch (err) {
+			console.log(err.response);
+		}
 		setCreateTweet("");
+		setSubmitState((prev) => !prev);
 	};
 
 	return (

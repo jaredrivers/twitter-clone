@@ -21,7 +21,7 @@ const Navlink = styled.p`
 
 function Navbar() {
 	const linkStyle = {
-		"text-decoration": "none",
+		textDecoration: "none",
 		color: "white",
 	};
 
