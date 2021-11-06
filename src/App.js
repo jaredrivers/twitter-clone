@@ -1,23 +1,21 @@
 import { useState } from "react";
-import TweetForm from "./components/TweetForm";
-import TweetFeed from "./components/TweetFeed";
-
+import Navbar from "./components/Navbar";
+import Profile from "./components/Profile";
+import Home from "./components/Home";
 import "./App.css";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 function App() {
-	const [createTweet, setCreateTweet] = useState();
-	const [sentTweet, setSentTweet] = useState([]);
-
 	return (
-		<div className='App'>
-			<TweetForm
-				sentTweet={sentTweet}
-				setSentTweet={setSentTweet}
-				createTweet={createTweet}
-				setCreateTweet={setCreateTweet}
-			/>
-			<TweetFeed sentTweet={sentTweet} setSentTweet={setSentTweet} />
-		</div>
+		<Router>
+			<div className='App'>
+				<Navbar />
+				<Switch>
+					<Route path='/' exact component={Home} />
+					<Route path='/profile' component={Profile} />
+				</Switch>
+			</div>
+		</Router>
 	);
 }
 

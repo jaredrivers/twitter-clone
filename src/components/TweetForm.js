@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "react";
 
 const Form = styled.form`
 	border: none;
-	background-color: #e7e7e7;
-	border-radius: 8px;
+	background-color: #15202b;
+	border-radius: 6px;
 `;
 
 const Textarea = styled.textarea`
 	height: 5rem;
 	padding: 1rem;
-	border: none;
 	resize: none;
 	width: 100%;
 	height: 7rem;
-	background-color: #e7e7e7;
-	color: black;
-	border-radius: 8px;
+	background-color: #15202b;
+	color: white;
+	border-radius: 6px;
 	outline: none;
 	font-size: 1.2rem;
+	border: none;
+	::placeholder {
+		color: #cccccc;
+	}
 `;
 
 const Button = styled.button`
@@ -29,17 +31,23 @@ const Button = styled.button`
 	margin: 1rem;
 	border: none;
 	font-size: 1rem;
-	border-radius: 5px;
+	border-radius: 4px;
 	color: white;
 	font-weight: 550;
-	background-color: #710117;
+	background-color: #007bff;
 	cursor: pointer;
 	margin-left: auto;
+	:disabled {
+		opacity: 50%;
+		cursor: auto;
+	}
 `;
 const LowerDiv = styled.div`
 	display: flex;
 	width: 100%;
 	align-items: center;
+	background-color: #15202b;
+	border-radius: 0 0 6px 6px;
 `;
 const Warning = styled.div`
 	flex-grow: 1;
@@ -49,33 +57,41 @@ const Warning = styled.div`
 
 function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
 	const [warn, setWarn] = useState(false);
+	const [disabled, setDisabled] = useState(true);
 
 	const changeHandler = (e) => {
-		if (e.target.value.length > 140) {
+		console.log(e.target.value.length);
+		if (e.target.value.length === 0) {
+			console.log("Its zero");
+			setDisabled(true);
+		} else if (e.target.value.length > 140) {
 			setWarn(true);
+			setDisabled(true);
 		} else {
 			setWarn(false);
+			setDisabled(false);
 		}
 		setCreateTweet(e.target.value);
 	};
 
-	const submitHandler = () => {
+	const submitHandler = async () => {
 		const date = new Date().toISOString();
+
+		const serverURL =
+			"https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet";
 
 		setSentTweet([
 			...sentTweet,
 			{
 				content: createTweet,
-				userName: "jaredriver",
+				userName: "Melania Drumpf",
 				date: date,
 			},
 		]);
-		axios.post(serverURL, sentTweet[sentTweet.length - 1]);
+
+		await axios.post(serverURL, sentTweet[sentTweet.length - 1]);
 		setCreateTweet("");
 	};
-
-	const serverURL =
-		"https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet";
 
 	return (
 		<div className='formWrapper'>
@@ -96,6 +112,7 @@ function TweetForm({ createTweet, setCreateTweet, sentTweet, setSentTweet }) {
 					name='sendTweet'
 					className='sendTweet'
 					id='sendTweet'
+					disabled={disabled}
 					onClick={submitHandler}>
 					Tweet
 				</Button>

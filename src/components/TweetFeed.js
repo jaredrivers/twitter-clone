@@ -12,10 +12,11 @@ const List = styled.ul`
 
 const TweetDiv = styled.div`
 	border-radius: 8px;
-	padding: 0.5rem 0.5rem 0 0.5rem;
-	background-color: #f5eadd;
-	border: 3px solid #710117;
+	padding: 1rem 2rem;
+	background-color: #343a40;
 	margin: 0.4rem 0;
+	color: white;
+	height: 100px;
 `;
 
 const Upper = styled.div`
@@ -26,8 +27,12 @@ const Upper = styled.div`
 	width: 100%;
 `;
 
-const Username = styled.p``;
-
+const Username = styled.p`
+	color: #6c757d;
+`;
+const TDate = styled.p`
+	color: #6c757d;
+`;
 const Tvalue = styled.p`
 	margin: 0.5rem 0.5rem 1rem 0.5rem;
 `;
@@ -56,7 +61,7 @@ function TweetFeed({ sentTweet, setSentTweet }) {
 					<TweetDiv key={tweet.id}>
 						<Upper>
 							<Username>{tweet.userName}</Username>
-							<p>{tweet.date}</p>
+							<TDate>{tweet.date}</TDate>
 						</Upper>
 						<Tvalue>{tweet.content}</Tvalue>
 					</TweetDiv>
