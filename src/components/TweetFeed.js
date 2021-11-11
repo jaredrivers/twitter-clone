@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
-import axios from "axios";
-import { TweetContext } from "../Contexts/TweetContext";
+import { TweetContext } from "../contexts/TweetContext";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { db } from "../firebase";
+import renderTweets from "../functions/renderTweets";
 
 const List = styled.ul`
 	width: 50%;
@@ -40,17 +42,58 @@ const Tvalue = styled.p`
 
 function TweetFeed() {
 	const { sentTweet, setSentTweet, submitState } = useContext(TweetContext);
+	const [limitNumber, setLimitNumber] = useState(6);
 
-	const tweetFetch = async () => {
-		try {
-			const tweetObject = await axios.get(
-				`https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet`
-			);
-			const tweetList = tweetObject.data.tweets;
-			setSentTweet(tweetList);
-		} catch {}
+	//Pageination
+	window.onscroll = function () {
+		if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+			console.log("bottom");
+			setLimitNumber((prev) => prev + 5);
+			console.log(limitNumber);
+		}
 	};
 
+	useEffect(() => {
+		const getTweets = async () => {
+			try {
+				const querySnapshot = await getDocs(
+					query(
+						collection(db, "tweets"),
+						orderBy("date", "desc"),
+						limit(limitNumber)
+					)
+				);
+				const tweets = querySnapshot.docs.map((doc) => {
+					return doc.data();
+				});
+				const tweetList = tweets;
+				setSentTweet(tweetList);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		getTweets();
+	}, [limitNumber]);
+
+	///set list of tweets to what is in database to be mapped over
+	const tweetFetch = async () => {
+		try {
+			const querySnapshot = await getDocs(
+				query(
+					collection(db, "tweets"),
+					orderBy("date", "desc"),
+					limit(limitNumber)
+				)
+			);
+			const tweets = querySnapshot.docs.map((doc) => {
+				return doc.data();
+			});
+			const tweetList = tweets;
+			setSentTweet(tweetList);
+		} catch (err) {
+			console.log(err);
+		}
+	};
 	useEffect(() => {
 		tweetFetch();
 	}, [submitState]);

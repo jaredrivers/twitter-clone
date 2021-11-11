@@ -2,7 +2,8 @@ import React from "react";
 import { useState } from "react";
 import TweetFeed from "./TweetFeed";
 import TweetForm from "./TweetForm";
-import { TweetContext } from "../Contexts/TweetContext";
+import { TweetContext } from "../contexts/TweetContext";
+import Navbar from "./Navbar";
 
 function Home() {
 	const [createTweet, setCreateTweet] = useState();
@@ -10,7 +11,8 @@ function Home() {
 	const [submitState, setSubmitState] = useState(false);
 
 	return (
-		<div>
+		<>
+			<Navbar />
 			<TweetContext.Provider
 				value={{
 					createTweet: createTweet,
@@ -23,7 +25,7 @@ function Home() {
 				<TweetForm />
 				<TweetFeed />
 			</TweetContext.Provider>
-		</div>
+		</>
 	);
 }
 

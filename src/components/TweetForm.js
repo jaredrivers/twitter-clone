@@ -1,8 +1,10 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { ProfileContext } from "../Contexts/ProfileContext";
-import { TweetContext } from "../Contexts/TweetContext";
+import { TweetContext } from "../contexts/TweetContext";
+import { getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Form = styled.form`
 	border: none;
@@ -64,7 +66,8 @@ const Warning = styled.div`
 `;
 
 function TweetForm() {
-	const { profileName } = useContext(ProfileContext);
+	const auth = getAuth();
+	const user = auth.currentUser;
 	const {
 		createTweet,
 		setCreateTweet,
@@ -88,22 +91,19 @@ function TweetForm() {
 		}
 		setCreateTweet(e.target.value);
 	};
-
 	const submitHandler = async () => {
+		setDisabled(true);
 		const date = new Date().toISOString();
 
 		setSentTweet([
 			...sentTweet,
-			{ content: createTweet, userName: profileName, date: date },
+			{ content: createTweet, userName: user.displayName, date: date },
 		]);
 
-		const serverURL =
-			"https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet";
-
 		try {
-			await axios.post(serverURL, {
+			const docRef = await addDoc(collection(db, "tweets"), {
 				content: createTweet,
-				userName: profileName,
+				userName: user.displayName,
 				date: date,
 			});
 		} catch (err) {
@@ -111,6 +111,7 @@ function TweetForm() {
 		}
 		setCreateTweet("");
 		setSubmitState((prev) => !prev);
+		setDisabled(false);
 	};
 
 	return (
