@@ -133,17 +133,21 @@ function TweetFeed() {
 		};
 		try {
 			const docRef = doc(db, "users", userId, "liked_tweets", tweetId);
-			const docSnap = await getDoc(docRef);
+			const docSnap = getDoc(docRef);
 			if (docSnap.exists()) {
 				await deleteDoc(doc(db, "users", userId, "liked_tweets", tweetId));
 			} else {
-				setDoc(doc(db, "users", userId, "liked_tweets", tweetId), tweetInfo);
-			}
-			const querySnapshot = await getDocs(
-				collection(db, "users", user.uid, "liked_tweets")
-			);
+				await setDoc(
+					doc(db, "users", userId, "liked_tweets", tweetId),
+					tweetInfo
+				);
 
-			setLikedTweets(querySnapshot.docs.map((tweet) => tweet.id));
+				const querySnapshot = await getDocs(
+					collection(db, "users", user.uid, "liked_tweets")
+				);
+
+				setLikedTweets(querySnapshot.docs.map((tweet) => tweet.id));
+			}
 		} catch (err) {
 			console.log(err.message, err);
 		}

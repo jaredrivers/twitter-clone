@@ -6,7 +6,7 @@ import { getAuth, updateProfile } from "firebase/auth";
 import Navbar from "./Navbar";
 import updateUser from "../functions/updateUser";
 import { db } from "../firebase";
-import { onSnapshot, collection, doc, getDoc } from "@firebase/firestore";
+import { setDoc, doc, getDoc } from "@firebase/firestore";
 import {
 	getStorage,
 	ref,
@@ -53,7 +53,7 @@ const Button = styled.button`
 	border-radius: 4px;
 	border: none;
 	color: white;
-	margin-right: 0.7rem;
+	margin: 0 0.7rem 0.5rem 0;
 	cursor: pointer;
 	font-size: 1rem;
 	padding: 0.5rem;
@@ -119,25 +119,38 @@ function Profile() {
 	const [img, setImg] = useState(null);
 	const [url, setURL] = useState("");
 	const storage = getStorage();
+	const [error, setError] = useState("");
 
-	const submitHandler = (e) => {
+	async function submitHandler(e) {
 		e.preventDefault();
+		setError("");
 		setDisabled(true);
 		setSubmit(true);
-		updateProfile(auth.currentUser, {
-			displayName: profileRef.current.value,
-		})
-			.then(() => {
-				setSubmit(false);
-				setDisabled(false);
+		const userNameRef = doc(db, "usernames", profileRef.current.value);
+		const docSnap = await getDoc(userNameRef);
+		if (docSnap.exists()) {
+			setError("Username is taken.");
+		} else if (profileRef.current.value === user.displayName) {
+			setError("This is your current username.");
+		} else {
+			await setDoc(userNameRef, { exists: true });
+			updateProfile(auth.currentUser, {
+				displayName: profileRef.current.value,
 			})
-			.catch((error) => {
-				error(error);
-				setSubmit(false);
-				setDisabled(false);
-			});
-	};
+				.then(() => {
+					setSubmit(false);
+					setDisabled(false);
+				})
+				.catch((error) => {
+					error(error);
+					setSubmit(false);
+					setDisabled(false);
+				});
+		}
+	}
 	const changeHandler = (e) => {
+		setError("");
+		setSubmit(false);
 		if (e.target.value.length > 0) {
 			setDisabled(false);
 		} else {
@@ -234,6 +247,7 @@ function Profile() {
 						<Button type='submit' onClick={submitHandler} disabled={disabled}>
 							{user.displayName ? "Change username" : "Set username"}
 						</Button>
+						{error && <p style={{ color: "red" }}>{error}</p>}
 					</Form>
 				</div>
 			</PageWrapper>
