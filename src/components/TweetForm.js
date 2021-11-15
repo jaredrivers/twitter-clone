@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import { TweetContext } from "../contexts/TweetContext";
 import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";

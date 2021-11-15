@@ -179,7 +179,6 @@ function Profile() {
 		{
 			!url && setURL(user.photoURL);
 		}
-		console.log(user.photoURL);
 	}, []);
 
 	return (

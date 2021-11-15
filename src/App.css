@@ -17,3 +17,9 @@ body {
 	margin: 1rem auto;
 	border: 2px solid #cccccc;
 }
+.liked {
+	color: red;
+}
+.not-liked {
+	color: #15202b;
+}
