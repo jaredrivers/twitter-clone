@@ -67,6 +67,7 @@ function TweetFeed() {
 	const { sentTweet, setSentTweet, submitState } = useContext(TweetContext);
 	const [limitNumber, setLimitNumber] = useState(6);
 	const [likedTweets, setLikedTweets] = useState([]);
+	const [likeClick, setLikeClick] = useState(false);
 	const auth = getAuth();
 	const user = auth.currentUser;
 	//Pageination
@@ -124,6 +125,7 @@ function TweetFeed() {
 	}, [submitState]);
 
 	async function clickHandler(userId, tweetId, username, date, content) {
+		setLikeClick(true);
 		const tweetInfo = {
 			user: userId,
 			id: tweetId,
@@ -133,9 +135,15 @@ function TweetFeed() {
 		};
 		try {
 			const docRef = doc(db, "users", userId, "liked_tweets", tweetId);
-			const docSnap = getDoc(docRef);
+			const docSnap = await getDoc(docRef);
+
 			if (docSnap.exists()) {
 				await deleteDoc(doc(db, "users", userId, "liked_tweets", tweetId));
+				const querySnapshot = await getDocs(
+					collection(db, "users", user.uid, "liked_tweets")
+				);
+
+				setLikedTweets(querySnapshot.docs.map((tweet) => tweet.id));
 			} else {
 				await setDoc(
 					doc(db, "users", userId, "liked_tweets", tweetId),
@@ -161,6 +169,7 @@ function TweetFeed() {
 
 		setLikedTweets(querySnapshot.docs.map((tweet) => tweet.id));
 	}
+
 	useEffect(() => {
 		loadHearts();
 	}, []);

@@ -18,8 +18,6 @@ import { getApp } from "firebase/app";
 const PageWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 60%;
-	margin: auto;
 	align-items: center;
 	height: 100vh;
 `;
@@ -32,7 +30,6 @@ const Title = styled.p`
 const Form = styled.form`
 	display: flex;
 	flex-direction: column;
-	width: 50%;
 	justify-content: center;
 	border-left: 1px solid grey;
 	padding: 2rem;
@@ -77,17 +74,15 @@ const Subtitle = styled.p`
 const PhotoDiv = styled.div`
 	margin: 1rem;
 	display: flex;
-	border: 2px solid #cccccc;
 	color: white;
-	border-radius: 6px;
-	width: 50%;
 	flex-direction: column;
-	height: 15rem;
 	justify-content: center;
 	height: auto;
-	width: auto;
+	margin-bottom: auto;
 `;
 const ImgDiv = styled.div`
+	border: 2px solid #cccccc;
+	border-radius: 6px;
 	display: flex;
 	padding: 1rem;
 	height: auto;
@@ -105,6 +100,10 @@ const UpperDiv = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+`;
+const LowerDiv = styled.div`
+	display: flex;
+	height: 100vh;
 `;
 
 function Profile() {
@@ -202,7 +201,7 @@ function Profile() {
 					<Title>My Profile</Title>
 					<hr style={{ color: "#cccccc", width: "80vw" }} />
 				</UpperDiv>
-				<div style={{ display: "flex", "margin-top": "7rem" }}>
+				<LowerDiv>
 					<PhotoDiv>
 						<ImgDiv>
 							{url && (
@@ -211,7 +210,6 @@ function Profile() {
 						</ImgDiv>
 						<div
 							style={{
-								marginTop: "auto",
 								display: "flex",
 								"flex-direction": "column",
 							}}>
@@ -225,31 +223,54 @@ function Profile() {
 								disabled={submit}
 							/>
 						</div>
-						<button disabled={submit} onClick={uploadHandler}>
+						<button
+							style={{ width: "30%" }}
+							disabled={submit}
+							onClick={uploadHandler}>
 							Upload
 						</button>
 					</PhotoDiv>
-					<Form>
-						{user.displayName ? (
-							<h3 style={{ color: "white" }}>Username: {user.displayName}</h3>
-						) : (
-							<h3 style={{ color: "white" }}>Username: None</h3>
-						)}
-						<Input
-							name='input'
-							text='change photo'
-							placeholder={
-								user.displayName ? user.displayName : "Please set username..."
-							}
-							ref={profileRef}
-							onChange={changeHandler}
-							autocomplete='off'></Input>
-						<Button type='submit' onClick={submitHandler} disabled={disabled}>
-							{user.displayName ? "Change username" : "Set username"}
-						</Button>
-						{error && <p style={{ color: "red" }}>{error}</p>}
-					</Form>
-				</div>
+					<div style={{ display: "flex", flexDirection: "column" }}>
+						<Form>
+							{user.displayName ? (
+								<h3 style={{ color: "white" }}>Username: {user.displayName}</h3>
+							) : (
+								<h3 style={{ color: "white" }}>Username: None</h3>
+							)}
+							<Input
+								name='input'
+								text='change photo'
+								placeholder={
+									user.displayName ? user.displayName : "Please set username..."
+								}
+								ref={profileRef}
+								onChange={changeHandler}
+								autocomplete='off'></Input>
+							<Button type='submit' onClick={submitHandler} disabled={disabled}>
+								{user.displayName ? "Change username" : "Set username"}
+							</Button>
+							{error && <p style={{ color: "red" }}>{error}</p>}
+						</Form>
+						<Form>
+							{user.email ? (
+								<h3 style={{ color: "white" }}>Email: {user.email}</h3>
+							) : (
+								<h3 style={{ color: "white" }}>Email: None</h3>
+							)}
+							<Input
+								name='input'
+								text='change photo'
+								placeholder={user.email ? user.email : "Change email"}
+								ref={profileRef}
+								onChange={changeHandler}
+								autocomplete='off'></Input>
+							<Button type='submit' disabled='true'>
+								{user.email ? "Change email" : ""}
+							</Button>
+							{error && <p style={{ color: "red" }}>{error}</p>}
+						</Form>
+					</div>
+				</LowerDiv>
 			</PageWrapper>
 		</>
 	);
